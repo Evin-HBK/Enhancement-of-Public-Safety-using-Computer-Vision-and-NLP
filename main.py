@@ -1,4 +1,4 @@
-from tweet_miner.miner import TweetMiner
+from tweet_mining.miner import TweetMiner
 from tweet_preprocessing import TweetPreprocess
 
 if __name__=='__main__':
