@@ -9,16 +9,10 @@ def Tweet_Preprocess(tweetlist):
     #tweets mined which is comes as a list of strings tweetlist
     #limit is the number of tweets
 
-    field=['tweet']
-
-    #convert list of strings to csv file
-    with open('tweet','w') as f:
-        write=csv.writer(f)
-        write.writerow(field)
-        write.writerows(tweetlist)
+    clean_txt=[]
 
     #convert to lower case
-    tf['clean_txt']=tf['tweet'].str.lower()
+    clean_txt.append(tweetlist.str.lower())
 
     #remove punctuations
     def remove_punctuations(text):
@@ -32,7 +26,7 @@ def Tweet_Preprocess(tweetlist):
     def remove_stopwords(text):
         return ' '.join([word for word in text.spilt() if word not in STOPWORDS])
 
-    tf['clean_txt']=tf['clean_txt'].apply(lambda x:remove_stopwords(x))
+    clean_txt=clean_txt.apply(lambda x:remove_stopwords(x))
 
     #can remove frequent words and rare words if needed
     #remove special characters and punctuations
@@ -41,26 +35,26 @@ def Tweet_Preprocess(tweetlist):
         text=re.sub('\s+',' ',text)
         return text
 
-    tf['clean_txt']=tf['clean_txt'].apply(lambda x:remove_spl_chars(x))
+    clean_txt=clean_txt.apply(lambda x:remove_spl_chars(x))
 
     #stemming
     ps=PorterStemmer()
     def stem_words(text):
         return " ".join([ps.stem(word) for word in text.split()])
 
-    tf['stemmed_txt']=tf['clean_txt'].apply(lambda x:stem_words(x))
+    clean_txt=clean_txt.apply(lambda x:stem_words(x))
 
     #remove URLs
     def remove_url(text):
         return re.sub(r'https?://\S+|www\.\S+', text)
 
-    tf['clean_txt']=tf['clean_txt'].apply(lambda x:remove_url(x))
+    clean_txt=clean_txt.apply(lambda x:remove_url(x))
 
     #remove html tags
     def remove_html_tags(text):
         returnre.sub(r'<.*?>','',text)
 
-    tf['clean_txt']=tf['clean_txt'].apply(lambda x:remove_html_tags(x))
+    clean_txt=clean_txt.apply(lambda x:remove_html_tags(x))
 
     #can perform spelling correction
     # remove twitter handles
@@ -70,7 +64,7 @@ def Tweet_Preprocess(tweetlist):
             input_txt=re.sub(word, "",input_txt)
         return input_txt
 
-    tf['clean_txt']=np.vectorsize(remove_pattern)(tf['clean_txt'],"@[\w]*")
+    clean_txt=np.vectorize(remove_pattern)(clean_txt,"@[\w]*")
 
     tweettxt=open("cleaned.txt")
 
