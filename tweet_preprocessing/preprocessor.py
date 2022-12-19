@@ -12,8 +12,7 @@ def Tweet_Preprocess(tweetlist):
     clean_txt=[]
 
     #convert to lower case
-    for tweet in tweetlist:
-    	clean_txt.append(tweet.lower)
+    clean_txt.append(tweetlist.str.lower())
 
     #remove punctuations
     def remove_punctuations(text):
@@ -26,8 +25,10 @@ def Tweet_Preprocess(tweetlist):
     STOPWORDS=set(stopwords.words('english'))
     def remove_stopwords(text):
         return ' '.join([word for word in text.spilt() if word not in STOPWORDS])
-
-    clean_txt=clean_txt.apply(lambda x:remove_stopwords(x))
+    
+    txt=[]
+    for x in clean_txt:
+        txt.append(remove_stopwords(x))
 
     #can remove frequent words and rare words if needed
     #remove special characters and punctuations
@@ -36,26 +37,35 @@ def Tweet_Preprocess(tweetlist):
         text=re.sub('\s+',' ',text)
         return text
 
-    clean_txt=clean_txt.apply(lambda x:remove_spl_chars(x))
+    clean_txt=[]
+    for x in txt:
+        clean_txt.append(remove_spl_chars(x))
 
     #stemming
     ps=PorterStemmer()
     def stem_words(text):
         return " ".join([ps.stem(word) for word in text.split()])
 
-    clean_txt=clean_txt.apply(lambda x:stem_words(x))
+    txt=[]
+    for x in clean_txt:
+        txt.append(stem_words(x))
 
     #remove URLs
     def remove_url(text):
         return re.sub(r'https?://\S+|www\.\S+', text)
 
-    clean_txt=clean_txt.apply(lambda x:remove_url(x))
+    clean_txt=[]
+    for x in txt:
+        clean_txt.append(remove_url(x))
 
     #remove html tags
     def remove_html_tags(text):
-        returnre.sub(r'<.*?>','',text)
+        return re.sub(r'<.*?>','',text)
 
-    clean_txt=clean_txt.apply(lambda x:remove_html_tags(x))
+    txt=[]
+    for x in clean_txt:
+        txt.append(remove_html_tags(x))
+
 
     #can perform spelling correction
     # remove twitter handles
@@ -65,8 +75,8 @@ def Tweet_Preprocess(tweetlist):
             input_txt=re.sub(word, "",input_txt)
         return input_txt
 
-    clean_txt=np.vectorize(remove_pattern)(clean_txt,"@[\w]*")
+    clean_txt = [" ".join([word for word in tweet.split() if not word.startswith('@')]) for tweet in txt]
 
-    tweettxt=open("cleaned.txt")
+    #tweettxt=open("cleaned.txt")
 
     #can do tokenization
