@@ -9,11 +9,11 @@ def Tweet_Preprocess(tweetlist):
     #tweets mined which is comes as a list of strings tweetlist
     #limit is the number of tweets
 
-    #convert list of strings to csv file
-    with open("tweets.csv",'w') as tf:
-        wr=csv.writer(tf, dialect='excel')
-        wr.writerows(tweetlist)
+    dict={'tweet':tweetlist}
 
+    #convert list of strings to csv file
+    tf=pd.DataFrame(dict)
+    df.to_csv('tweet.csv')
 
     #convert to lower case
     tf['clean_txt']=tf['tweet'].str.lower()
