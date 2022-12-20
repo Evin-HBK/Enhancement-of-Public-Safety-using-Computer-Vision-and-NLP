@@ -39,8 +39,8 @@ def TweetMiner(limit):
 	tweetlist=[]
 	#print(tweets)
 	for i,tweet in enumerate(tweets.data):
-	    tweetlist.append(tweet.text)
-	    #print(tweet.text)
+		tweetlist.append(tweet.text)
+	#print(tweet.text)
 
 	#print(tweetlist)
 
@@ -56,8 +56,8 @@ def TweetMiner(limit):
 	tweetlist=[]
 
 	for i,tweet in enumerate(tweets.data):
-	    tweetlist.append({i+1:tweet.text})
-	    print(tweet.context_annotations)
+	tweetlist.append({i+1:tweet.text})
+	print(tweet.context_annotations)
 
 	'''
 	return tweetlist
