@@ -1,4 +1,5 @@
-import json
+#import json
+#import langdetect
 import tweepy as tp
 import configparser
 import GetOldTweets3 as got
@@ -39,7 +40,11 @@ def TweetMiner(limit):
 	tweetlist=[]
 	#print(tweets)
 	for i,tweet in enumerate(tweets.data):
-		tweetlist.append(tweet.text)
+		#if langdetect.detect(str(tweet))=='en':
+
+		#Remove duplicate tweets
+		if tweet not in tweetlist:
+			tweetlist.append(tweet.text)
 	#print(tweet.text)
 
 	#print(tweetlist)

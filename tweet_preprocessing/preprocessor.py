@@ -1,60 +1,58 @@
-import csv
-import pandas as pd
-import string
-from nltk.corpus import stopwords
 import re
-from nltk.stem.porter import PorterStemmer
+import csv
+import string
+import pandas as pd
+from langdetect import detect
+
+import nltk
+#download NLTK files
+nltk.download('wordnet')
+from nltk.corpus import stopwords
+#from nltk.stem.porter import PorterStemmer
+from nltk.stem.wordnet import WordNetLemmatizer
 
 def Tweet_Preprocess(tweetlist):
 
     #Setting up CSV file
     csvfile=csv.writer(open('tweet_preprocessing/tweets.csv','w'))
-    fields=['Raw Tweets','Preprocessed Tweets']
-    csvfile.writerow(fields)
+    csvfields=['Raw Tweets','Preprocessed Tweets']
+    csvfile.writerow(csvfields)
+    csvrows=[]
     
     #Defining a new list for storing cleaned tweets
     clean_tweets=[]
 
-    #   - Conversion to lowercase
-    #   - Deletion of duplicate tweets
-    for tweet in tweetlist:
-        if tweet not in clean_tweets:
-            clean_tweets.append(tweet.lower())
-    
-    #Remove punctuation marks
-    for idx in range(len(clean_tweets)):
-        clean_tweets[idx]=clean_tweets[idx].translate(str.maketrans('','',string.punctuation))
-    
-    #Remove stopwords
+    #Setting up Stopwords and Lemmetizer
     stopwords_list=set(stopwords.words('english'))
-    for idx in range(len(clean_tweets)):
-        clean_tweets[idx]=' '.join([word for word in clean_tweets[idx].split() if word not in stopwords_list])
+    wnl=WordNetLemmatizer()
 
-    #Removing frequent/rare words
-    for idx in range(len(clean_tweets)):
-        clean_tweets[idx]=re.sub('[^a-zA-Z)-9]'," ",clean_tweets[idx])
-        clean_tweets[idx]=re.sub('\s+',' ',clean_tweets[idx])
+    for rawtweet in tweetlist:
+        if detect(rawtweet)=='en':
 
-    #Stemming
-    ps=PorterStemmer()
-    for idx in range(len(clean_tweets)):
-        clean_tweets[idx]=" ".join([ps.stem(word) for word in clean_tweets[idx].split()])
+            #Converting to lowercase
+            clean_tweet=rawtweet.lower()
+            
+            #Remove hyperlinks
+            clean_tweet=re.sub(r'https?://\S+|www\.\S+','',clean_tweet)
 
-    #Remove URLs
-    for idx in range(len(clean_tweets)):
-        clean_tweets[idx]=re.sub(r'https?://\S+|www\.\S+','',clean_tweets[idx])
+            #Remove HTML tags
+            clean_tweet=re.sub(r'<.*?>','',clean_tweet)
 
-    #Removing HTML Tags
-    for idx in range(len(clean_tweets)):
-        clean_tweets[idx]=re.sub(r'<.*?>','',clean_tweets[idx])
+            #Remove user mentions
+            clean_tweet=" ".join([word for word in clean_tweet.split() if not word.startswith('@')])
 
-    #Removing Twitter Handles
-    clean_tweets=[" ".join([word for word in tweet.split() if not word.startswith('@')]) for tweet in clean_tweets]
+            #Remove punctuation marks
+            clean_tweet=clean_tweet.translate(str.maketrans('','',string.punctuation))
 
-    #Writing raw and cleaned tweets to csv file
-    rows=[]
+            #Remove emojis and other characters
+            clean_tweet=re.sub('[^a-zA-Z0-9]'," ",clean_tweet)
 
-    for idx in range(len(tweetlist)):
-        rows.append([tweetlist[idx],clean_tweets[idx]])
+            #Replace combinations of tabs and spaces with single white space
+            clean_tweet=re.sub('\s+',' ',clean_tweet)
+
+            #
+            clean_tweet=' '.join([word for word in clean_tweet.split(' ') if word not in stopwords_list])
+            clean_tweet=' '.join([wnl.lemmatize(word) for word in clean_tweet.split(' ')])
+            csvrows.append([rawtweet,clean_tweet])
     
-    csvfile.writerows(rows)
+    csvfile.writerows(csvrows)
