@@ -6,6 +6,7 @@ from langdetect import detect
 
 import nltk
 #download NLTK files
+nltk.download('stopwords')
 nltk.download('wordnet')
 from nltk.corpus import stopwords
 #from nltk.stem.porter import PorterStemmer
