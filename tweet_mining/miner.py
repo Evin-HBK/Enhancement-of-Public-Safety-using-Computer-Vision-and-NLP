@@ -31,7 +31,7 @@ def TweetMiner(limit):
 	#query_file=json.load(open('query.json','r'))
 
 	#Setting up search queries
-	user='TheKeralaPolice'
+	user='PoliceSight'
 	id=client.get_user(username=user).data.id
 
 	#Extracting Tweets

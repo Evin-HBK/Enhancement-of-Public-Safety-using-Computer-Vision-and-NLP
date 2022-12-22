@@ -1,0 +1,5 @@
+GetOldTweets3==0.0.11
+langdetect==1.0.9
+nltk==3.7
+pandas==1.4.4
+tweepy==4.10.1
